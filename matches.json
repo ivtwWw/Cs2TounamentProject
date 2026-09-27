@@ -1,18 +1,41 @@
-[
+{
+  "tournamentTitle": "CS2 社区娱乐赛",
+  "matches": [
     {
-        "match_title": "S3 赛季 - 决赛",
-        "map": "de_mirage",
-        "team_a": "Team Charlie",
-        "team_b": "Team Delta",
-        "score": "13 - 10",
-        "winner": "Team Charlie"
+      "stage": "半决赛 (BO1)",
+      "map": "地图: Dust II",
+      "teamA": "Team_YOungggggg",
+      "teamB": "Team_67s1gmab0y",
+      "format": "BO1",
+      "score": "13 - 8",
+      "winner": "Team_YOungggggg"
     },
     {
-        "match_title": "S3 赛季 - 半决赛",
-        "map": "de_inferno",
-        "team_a": "Team Charlie",
-        "team_b": "Team Echo",
-        "score": "13 - 8",
-        "winner": "Team Charlie"
+      "stage": "半决赛 (BO1)",
+      "map": "地图: Ancient",
+      "teamA": "Team_Pure1ove",
+      "teamB": "Team_chinagunman1",
+      "format": "BO1",
+      "score": "2 - 13",
+      "winner": "Team_chinagunman1"
+    },
+    {
+      "stage": "季军赛 (BO3)",
+      "map": "Vertigo (19:17) / Nuke (9:13) / Mirage (13:2)",
+      "teamA": "Team_Pure1ove",
+      "teamB": "Team_67s1gmab0y",
+      "format": "BO3",
+      "score": "2 : 1",
+      "winner": "Team_Pure1ove"
+    },
+    {
+      "stage": "总决赛 (BO3)",
+      "map": "Dust II (13:7) / Mirage (13:4)",
+      "teamA": "Team_YOungggggg",
+      "teamB": "Team_chinagunman1",
+      "format": "BO3",
+      "score": "2 : 0",
+      "winner": "Team_YOungggggg"
     }
-]
+  ]
+}
