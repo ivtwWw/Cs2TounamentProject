@@ -1,0 +1,18 @@
+[
+    {
+        "match_title": "S3 赛季 - 决赛",
+        "map": "de_mirage",
+        "team_a": "Team Charlie",
+        "team_b": "Team Delta",
+        "score": "13 - 10",
+        "winner": "Team Charlie"
+    },
+    {
+        "match_title": "S3 赛季 - 半决赛",
+        "map": "de_inferno",
+        "team_a": "Team Charlie",
+        "team_b": "Team Echo",
+        "score": "13 - 8",
+        "winner": "Team Charlie"
+    }
+]
