@@ -82,7 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
             <section class="team-detail card">
                 <h3 class="${team.name === winner ? 'winner' : ''}">${escapeHtml(team.name)}</h3>
                 <div class="table-wrapper">
-                    <table>
+                    <table class="player-stats-table">
+                        <colgroup>
+                            <col class="player-name-column">
+                            <col span="7" class="player-stat-column">
+                        </colgroup>
                         <thead><tr>
                             <th>选手</th><th>K</th><th>D</th><th>A</th>
                             <th>K/D</th><th>爆头率</th><th>ADR</th><th>MVP</th>

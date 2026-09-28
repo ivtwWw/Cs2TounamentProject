@@ -25,6 +25,7 @@ cs2MatchSite/
 ├── 📄 series.html                # One edition's match list
 ├── 📄 match.html                 # Match detail page
 ├── 📄 about.html                 # About the community tournament
+├── 📄 hall-of-fame.html          # Hall of fame placeholder page
 ├── 📄 _config.yml                # Keep Markdown files available as raw content
 ├── 📁 assets/
 │   ├── 📁 css/
