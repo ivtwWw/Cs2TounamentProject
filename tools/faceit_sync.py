@@ -1,12 +1,13 @@
 import json
 import os
 import re
+from pathlib import Path
 
 import requests
 
 
 FACEIT_API_KEY_ENV = "FACEIT_API_KEY"
-JSON_FILE = "matches.json"
+JSON_FILE = Path(__file__).resolve().parent.parent / "data" / "matches.json"
 
 
 def parse_player_stats(stats_data, factions):

@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    fetch('matches.json')
+    fetch('data/matches.json')
         .then((response) => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();

@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "'": '&#039;'
     }[character]));
 
-    fetch('matches.json')
+    fetch('data/matches.json')
         .then(response => response.json())
         .then(data => {
             const matchListContainer = document.getElementById('match-list');
