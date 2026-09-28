@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import tempfile
 
 from tools.faceit_sync import (
@@ -16,8 +17,19 @@ def load_store():
 
     with JSON_FILE.open("r", encoding="utf-8") as file:
         store = json.load(file)
-    if not isinstance(store, dict) or not isinstance(store.get("matches"), list):
+    if not isinstance(store, dict):
         raise ValueError(f"比赛数据文件格式错误：{JSON_FILE}")
+    if not isinstance(store.get("series"), list):
+        legacy_matches = store.pop("matches", [])
+        store["series"] = [{
+            "id": "s1",
+            "title": "Aussie Laozi Cup S1",
+            "status": "completed",
+            "description": "首届 Aussie Laozi Cup。",
+            "matches": legacy_matches,
+        }]
+    if any(not isinstance(item.get("matches"), list) for item in store["series"]):
+        raise ValueError(f"系列赛数据格式错误：{JSON_FILE}")
     return store
 
 
@@ -40,15 +52,39 @@ def save_store(store):
             os.remove(temporary_path)
 
 
-def display_matches(matches):
-    if not matches:
+def match_entries(store):
+    return [
+        (series, match)
+        for series in store["series"]
+        for match in series["matches"]
+    ]
+
+
+def display_series(store):
+    if not store["series"]:
+        print("\n目前没有系列赛。")
+        return
+
+    print("\n当前系列赛：")
+    for index, series in enumerate(store["series"], start=1):
+        print(
+            f"{index}. {series.get('title', series.get('id', '未命名'))} "
+            f"[{series.get('status', 'completed')}] - "
+            f"{len(series['matches'])} 场比赛"
+        )
+
+
+def display_matches(store):
+    entries = match_entries(store)
+    if not entries:
         print("\n目前没有比赛记录。")
         return
 
     print("\n当前比赛：")
-    for index, match in enumerate(matches, start=1):
+    for index, (series, match) in enumerate(entries, start=1):
         print(
-            f"{index}. [{match.get('stage', '未命名赛事')}] "
+            f"{index}. [{series.get('title', '未命名届次')}] "
+            f"{match.get('stage', '未命名赛事')} | "
             f"{match.get('teamA', '未知队伍')} {match.get('score', '-')} "
             f"{match.get('teamB', '未知队伍')} "
             f"({match.get('format', '未标注赛制')})"
@@ -57,22 +93,23 @@ def display_matches(matches):
 
 def remove_match():
     store = load_store()
-    matches = store["matches"]
-    display_matches(matches)
-    if not matches:
+    entries = match_entries(store)
+    display_matches(store)
+    if not entries:
         return
 
     selection = input("\n输入要删除的比赛编号，输入 0 返回：").strip()
     if selection == "0":
         return
-    if not selection.isdigit() or not 1 <= int(selection) <= len(matches):
+    if not selection.isdigit() or not 1 <= int(selection) <= len(entries):
         print("编号无效，没有删除任何比赛。")
         return
 
     index = int(selection) - 1
-    match = matches[index]
+    series, match = entries[index]
     print(
-        f"\n即将删除：{match.get('stage', '未命名赛事')} | "
+        f"\n即将删除：{series.get('title', '未命名届次')} | "
+        f"{match.get('stage', '未命名赛事')} | "
         f"{match.get('teamA', '?')} {match.get('score', '-')} "
         f"{match.get('teamB', '?')}"
     )
@@ -80,7 +117,7 @@ def remove_match():
         print("已取消，比赛记录未更改。")
         return
 
-    del matches[index]
+    series["matches"].remove(match)
     save_store(store)
     print(f"已删除比赛；更新文件：{JSON_FILE}")
 
@@ -136,33 +173,236 @@ def add_match():
         return
 
     store = load_store()
-    existing_ids = {match.get("id") for match in store["matches"]}
+    if not store["series"]:
+        print("当前没有系列赛，请先创建系列赛。")
+        return
+    display_series(store)
+    selection = input("选择所属系列赛编号：").strip()
+    if not selection.isdigit() or not 1 <= int(selection) <= len(store["series"]):
+        print("编号无效，没有添加比赛。")
+        return
+    selected_series = store["series"][int(selection) - 1]
+
+    existing_ids = {
+        match.get("id")
+        for series in store["series"]
+        for match in series["matches"]
+    }
     if new_match.get("id") in existing_ids:
         print("这场比赛已存在（Match ID 重复），未添加。")
         return
-    store["matches"].insert(0, new_match)
+    selected_series["matches"].insert(0, new_match)
+    if selected_series.get("status") == "upcoming":
+        selected_series["status"] = "active"
     save_store(store)
-    print(f"已添加比赛；更新文件：{JSON_FILE}")
+    print(f"已添加到 {selected_series['title']}；更新文件：{JSON_FILE}")
+
+
+def add_series():
+    store = load_store()
+    series_id = input("系列赛 ID（例如 s2）：").strip().lower()
+    if not series_id or any(item.get("id") == series_id for item in store["series"]):
+        print("ID 为空或已存在，没有创建系列赛。")
+        return
+
+    title = input("系列赛标题（例如 Aussie Laozi Cup S2）：").strip()
+    if not title:
+        print("标题不能为空，没有创建系列赛。")
+        return
+    description = input("系列赛简介（可留空）：").strip()
+    status = input("状态：1=即将开始，2=进行中，3=已结束 [1/2/3]：").strip()
+    status_values = {"1": "upcoming", "2": "active", "3": "completed"}
+    if status not in status_values:
+        print("状态无效，没有创建系列赛。")
+        return
+
+    store["series"].append({
+        "id": series_id,
+        "title": title,
+        "status": status_values[status],
+        "description": description,
+        "matches": [],
+    })
+    save_store(store)
+    print(f"已创建 {title}；更新文件：{JSON_FILE}")
+
+
+def update_series():
+    store = load_store()
+    display_series(store)
+    if not store["series"]:
+        return
+
+    selection = input("选择要更新的系列赛编号，输入 0 返回：").strip()
+    if selection == "0":
+        return
+    if not selection.isdigit() or not 1 <= int(selection) <= len(store["series"]):
+        print("编号无效，没有更改状态。")
+        return
+
+    series = store["series"][int(selection) - 1]
+    status = input(
+        f"新状态：1=即将开始，2=进行中，3=已结束 "
+        f"[当前 {series.get('status', 'completed')}，留空保持不变]："
+    ).strip()
+    status_values = {"1": "upcoming", "2": "active", "3": "completed"}
+    if status and status not in status_values:
+        print("状态无效，没有更改状态。")
+        return
+    if status:
+        series["status"] = status_values[status]
+
+    event_time = input(
+        f"比赛时间（如 2026年9月1日—9月15日）"
+        f"[当前 {series.get('eventTime', '未设置')}，留空保持，输入 - 清除]："
+    ).strip()
+    if event_time == "-":
+        series.pop("eventTime", None)
+    elif event_time:
+        series["eventTime"] = event_time
+
+    schedule = input(
+        "赛程信息（多个阶段可用分号分隔；留空保持，输入 - 清除）"
+        f"[当前 {series.get('schedule', '未设置')}]："
+    ).strip()
+    if schedule == "-":
+        series.pop("schedule", None)
+    elif schedule:
+        series["schedule"] = "\n".join(
+            part.strip() for part in schedule.split(";") if part.strip()
+        )
+
+    save_store(store)
+    print(
+        f"已更新 {series['title']}：状态 {series['status']}，"
+        f"比赛时间 {series.get('eventTime', '未设置')}。"
+    )
+
+
+def find_champion_players(series):
+    final_match = next(
+        (
+            match for match in series["matches"]
+            if re.search(r"总决赛|grand[\s-]*final", match.get("stage", ""), re.I)
+        ),
+        None,
+    )
+    champion = series.get("championTeam") or (final_match or {}).get("winner")
+    if not champion:
+        return champion, []
+
+    maps = (final_match or {}).get("maps") or (final_match or {}).get("details", {}).get("maps", [])
+    teams = (
+        [team for map_data in maps for team in map_data.get("teams", [])]
+        if maps
+        else (final_match or {}).get("details", {}).get("teams", [])
+    )
+    players = {}
+    for team in teams:
+        if team.get("name") != champion:
+            continue
+        for player in team.get("players", []):
+            key = player.get("playerId") or player.get("nickname")
+            if key:
+                players.setdefault(key, {
+                    "nickname": player.get("nickname", ""),
+                    "playerId": player.get("playerId", ""),
+                    "avatar": player.get("avatar", ""),
+                })
+    return champion, list(players.values())
+
+
+def edit_series_awards():
+    store = load_store()
+    display_series(store)
+    if not store["series"]:
+        return
+
+    selection = input("选择要编辑的届次编号，输入 0 返回：").strip()
+    if selection == "0":
+        return
+    if not selection.isdigit() or not 1 <= int(selection) <= len(store["series"]):
+        print("编号无效，没有更改赛事荣誉信息。")
+        return
+
+    series = store["series"][int(selection) - 1]
+    champion, players = find_champion_players(series)
+    current_captain = series.get("captain", {})
+    current_mvp = series.get("mvp", {})
+    print(f"\n冠军队伍（总决赛胜者）：{champion or '未识别'}")
+    print("所有信息留空表示保持现值。")
+
+    entered_champion = input(f"冠军队名 [{series.get('championTeam', champion or '')}]：").strip()
+    if entered_champion:
+        series["championTeam"] = entered_champion
+        champion, players = find_champion_players(series)
+
+    captain = dict(current_captain)
+    for key, label in (("nickname", "队长昵称"), ("playerId", "队长 FACEIT ID"), ("avatar", "队长头像 URL")):
+        value = input(f"{label} [{captain.get(key, '')}]：").strip()
+        if value:
+            captain[key] = value
+    if any(captain.values()):
+        series["captain"] = captain
+
+    mvp = dict(current_mvp)
+    for key, label in (("nickname", "MVP 昵称"), ("playerId", "MVP FACEIT ID"), ("rating", "赛事总 Rating"), ("avatar", "MVP 头像 URL")):
+        value = input(f"{label} [{mvp.get(key, '')}]：").strip()
+        if value:
+            mvp[key] = value
+    if any(mvp.values()):
+        series["mvp"] = mvp
+
+    if players:
+        print("\n冠军队选手头像（FACEIT 选手资料页可复制头像图片地址；留空保留现值）：")
+        saved_players = {
+            player.get("playerId") or player.get("nickname"): player
+            for player in series.get("championPlayers", [])
+        }
+        for player in players:
+            key = player.get("playerId") or player.get("nickname")
+            existing = saved_players.get(key, player)
+            print(f"- {player['nickname']} | ID: {player['playerId'] or '未记录'}")
+            avatar = input(f"  头像 URL [{existing.get('avatar', '')}]：").strip()
+            saved_players[key] = {
+                **player,
+                "avatar": avatar or existing.get("avatar", ""),
+            }
+        series["championPlayers"] = list(saved_players.values())
+
+    save_store(store)
+    print(f"已更新 {series['title']} 的冠军、队长、MVP 和队员资料。")
 
 
 def main():
     while True:
         print(
             "\n========== CS2 比赛数据管理 ==========\n"
-            "1. 查看比赛列表\n"
+            "1. 查看系列赛列表\n"
             "2. 拉取并添加新比赛\n"
             "3. 删除比赛\n"
+            "4. 创建系列赛（如 S2）\n"
+            "5. 更新系列赛信息（状态、比赛时间、赛程）\n"
+            "6. 编辑冠军、队长、MVP 和队员资料\n"
             "0. 退出"
         )
         choice = input("请选择：").strip()
 
         try:
             if choice == "1":
-                display_matches(load_store()["matches"])
+                store = load_store()
+                display_series(store)
+                display_matches(store)
             elif choice == "2":
                 add_match()
             elif choice == "3":
                 remove_match()
+            elif choice == "4":
+                add_series()
+            elif choice == "5":
+                update_series()
+            elif choice == "6":
+                edit_series_awards()
             elif choice == "0":
                 print("已退出。")
                 return

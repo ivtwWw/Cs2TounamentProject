@@ -85,13 +85,378 @@ h2 {
     margin-top: 40px;
 }
 
-.about-card h2 {
+.about-content h1,
+.about-content h2,
+.about-content h3 {
     margin-bottom: 18px;
 }
 
-.about-card p {
+.about-content h1,
+.about-content h2,
+.about-content h3,
+.about-content p,
+.about-content ul {
+    margin-top: 16px;
+}
+
+.about-content p,
+.about-content li {
     color: #c5c5c5;
+}
+
+.about-content ul {
+    padding-left: 24px;
+}
+
+.about-content a {
+    color: #ff5500;
+}
+
+.series-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.series-card {
+    color: inherit;
+    min-height: 160px;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.series-card:hover {
+    border: 1px solid #ff5500;
+    transform: translateY(-2px);
+}
+
+.series-card-heading {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.series-card-heading h3 {
+    color: #fff;
+    font-size: 20px;
+}
+
+.series-card > p,
+.series-page-heading > p {
+    color: #999;
+    margin-top: 12px;
+}
+
+.series-card > .series-card-meta {
+    color: #aaa;
+    font-size: 14px;
+    margin-top: 8px;
+    white-space: pre-line;
+}
+
+.series-card-meta strong,
+.series-schedule-meta strong {
+    color: #ff9a52;
+    margin-right: 8px;
+}
+
+.series-page-heading > .series-schedule-meta {
+    color: #bbb;
+    margin-top: 8px;
+    white-space: pre-line;
+}
+
+.series-status {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    white-space: nowrap;
+}
+
+.status-upcoming {
+    background: #33230f;
+    color: #ffc107;
+}
+
+.status-active {
+    background: #12331a;
+    color: #4caf50;
+}
+
+.status-completed {
+    background: #292929;
+    color: #aaa;
+}
+
+.series-card-footer {
+    align-items: center;
+    border-top: 1px solid #333;
+    color: #999;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding-top: 12px;
+}
+
+.series-card-footer span {
+    color: #ff5500;
+}
+
+.series-card-awards {
+    border-top: 1px solid #333;
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+}
+
+.series-card-awards span {
+    color: #ccc;
+    font-size: 14px;
+}
+
+.series-card-awards > span:first-child > strong {
+    color: #ff9a52;
+    display: inline-block;
+    margin-right: 8px;
+    min-width: 42px;
+}
+
+.series-card-award-person {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+}
+
+.series-card-award-person > strong {
+    color: #ff9a52;
+    min-width: 42px;
+}
+
+.series-card-award-person small {
+    color: #999;
+    margin-left: auto;
+}
+
+.series-card-avatar {
+    align-items: center;
+    background: #393939;
+    border-radius: 50%;
+    color: #ff9a52;
+    display: inline-flex;
+    flex: 0 0 28px;
+    height: 28px;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 28px;
+}
+
+.series-card-avatar img {
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    position: absolute;
+    transition: opacity 0.15s;
+    width: 100%;
+}
+
+.series-card-avatar img.is-loaded {
+    opacity: 1;
+}
+
+.series-card-avatar-fallback.is-hidden {
+    opacity: 0;
+}
+
+.series-page-heading {
+    background: #1e1e1e;
+    border-radius: 8px;
+    margin: 30px 0;
+    padding: 28px;
+    text-align: center;
+}
+
+.series-page-heading h2 {
+    border: 0;
+    font-size: clamp(26px, 4vw, 38px);
     margin: 12px 0;
+    padding: 0;
+}
+
+.series-page-stats {
+    align-items: baseline;
+    color: #999;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.series-page-stats span:first-child {
+    color: #ff5500;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.series-awards {
+    margin: 32px 0;
+}
+
+.champion-overview {
+    margin-bottom: 16px;
+}
+
+.champion-heading,
+.award-player {
+    align-items: center;
+    display: flex;
+    gap: 14px;
+}
+
+.trophy-mark {
+    font-size: 32px;
+}
+
+.champion-heading > div > span,
+.player-tournament-stats > span {
+    color: #999;
+    font-size: 13px;
+}
+
+.champion-heading h3,
+.award-panel h3 {
+    color: #ff9a52;
+    font-size: 20px;
+}
+
+.champion-captain {
+    color: #bbb;
+    margin-top: 12px;
+}
+
+.champion-captain strong {
+    color: #fff;
+}
+
+.roster-heading {
+    border: 0;
+    font-size: 16px;
+    margin: 22px 0 10px;
+    padding: 0;
+}
+
+.champion-roster {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    list-style: none;
+}
+
+.champion-player {
+    align-items: center;
+    background: #252525;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    padding: 10px;
+}
+
+.champion-avatar {
+    align-items: center;
+    background: #393939;
+    border-radius: 50%;
+    color: #ff9a52;
+    display: inline-flex;
+    grid-row: span 2;
+    height: 42px;
+    justify-content: center;
+    overflow: hidden;
+    width: 42px;
+}
+
+.champion-avatar img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.champion-avatar img:not([hidden]) {
+    display: block;
+}
+
+.champion-player-name {
+    color: #eee;
+    font-weight: 700;
+}
+
+.captain-badge {
+    background: #33230f;
+    border-radius: 999px;
+    color: #ffc107;
+    font-size: 11px;
+    margin-left: 6px;
+    padding: 2px 7px;
+}
+
+.mvp-badge {
+    background: #32213a;
+    border-radius: 999px;
+    color: #df9cff;
+    font-size: 11px;
+    margin-left: 6px;
+    padding: 2px 7px;
+}
+
+.faceit-player-link {
+    color: #888;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+}
+
+.faceit-player-link:hover,
+.award-player a:hover {
+    color: #ff9a52;
+    text-decoration: underline;
+}
+
+.award-panel {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.award-player {
+    margin-top: 14px;
+}
+
+.player-tournament-stats {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    margin-top: 18px;
+}
+
+.player-tournament-stats > span {
+    background: #252525;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+}
+
+.award-player a {
+    color: #eee;
+    text-decoration: none;
+}
+
+.player-tournament-stats > span strong {
+    color: #fff;
+    display: block;
+    font-size: 18px;
 }
 
 /* 焦点比赛样式 */
@@ -134,9 +499,9 @@ h2 {
 /* 历史战绩列表样式 */
 .match-result {
     display: grid;
-    grid-template-columns: minmax(160px, 1fr) minmax(330px, 1.8fr) auto;
-    align-items: center;
-    gap: 18px;
+    grid-template-columns: minmax(180px, 0.8fr) minmax(340px, 1.6fr) auto;
+    align-items: start;
+    gap: 20px;
 }
 
 .match-link {
@@ -229,7 +594,7 @@ th {
 
     .match-result {
         align-items: flex-start;
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 12px;
     }
 
@@ -241,11 +606,12 @@ th {
 .match-info h3 {
     font-size: 16px;
     color: #ff5500;
+    margin-bottom: 8px;
 }
 
 .match-info p {
-    font-size: 14px;
     color: #888;
+    font-size: 14px;
 }
 
 .score-board {

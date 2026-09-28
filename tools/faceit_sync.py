@@ -14,6 +14,12 @@ def parse_player_stats(stats_data, factions):
     """将 FACEIT stats 中每张地图的队伍和选手数据转换为页面结构。"""
     maps = []
     faction_names = {faction.get("faction_id"): faction.get("name") for faction in factions}
+    player_profiles = {}
+    for faction in factions:
+        for profile in faction.get("players", []):
+            player_id = profile.get("player_id") or profile.get("playerId")
+            if player_id:
+                player_profiles[player_id] = profile
 
     for index, round_data in enumerate(stats_data.get("rounds", []), start=1):
         round_stats = round_data.get("round_stats", {})
@@ -27,14 +33,24 @@ def parse_player_stats(stats_data, factions):
             team_name = faction_names.get(
                 team_id, team_data.get("team_name", "未知队伍")
             )
-            players = [
-                {
+            players = []
+            for player in team_data.get("players", []):
+                player_id = player.get("player_id") or player.get("playerId")
+                profile = player_profiles.get(player_id, {})
+                avatar = (
+                    player.get("avatar")
+                    or player.get("avatar_url")
+                    or profile.get("avatar")
+                    or profile.get("avatar_url")
+                )
+                saved_player = {
                     "nickname": player.get("nickname", "未知选手"),
-                    "playerId": player.get("player_id"),
+                    "playerId": player_id,
                     "stats": player.get("player_stats", {}),
                 }
-                for player in team_data.get("players", [])
-            ]
+                if avatar:
+                    saved_player["avatar"] = avatar
+                players.append(saved_player)
             teams.append({"name": team_name, "players": players})
 
         raw_score = round_stats.get("Score", "")
@@ -267,22 +283,54 @@ def main():
         ).strip().lower() == "y":
             match_data["format"] = "BO3"
 
-        data_store = {"matches": []}
+        data_store = {"tournamentTitle": "CS2 社区娱乐赛", "series": []}
         if os.path.exists(JSON_FILE):
             with open(JSON_FILE, "r", encoding="utf-8") as file:
                 try:
                     data_store = json.load(file)
                 except json.JSONDecodeError:
-                    pass
+                    raise ValueError(f"比赛数据文件不是有效 JSON：{JSON_FILE}")
 
-        data_store["matches"].insert(0, match_data)
+        if not isinstance(data_store.get("series"), list):
+            legacy_matches = data_store.pop("matches", [])
+            data_store["series"] = [{
+                "id": "s1",
+                "title": "Aussie Laozi Cup S1",
+                "status": "completed",
+                "description": "Aussie Laozi Cup 首届比赛记录。",
+                "matches": legacy_matches,
+            }]
+
+        if not data_store["series"]:
+            print("❌ 当前没有系列赛，请先运行 `python -m tools.manage_matches` 创建一届赛事。")
+            return
+
+        print("\n所属系列赛：")
+        for index, series in enumerate(data_store["series"], start=1):
+            print(f"{index}. {series.get('title', series.get('id', '未命名'))}")
+        selection = input("请选择系列赛编号：").strip()
+        if not selection.isdigit() or not 1 <= int(selection) <= len(data_store["series"]):
+            print("❌ 系列赛编号无效，未保存比赛。")
+            return
+
+        selected_series = data_store["series"][int(selection) - 1]
+        if any(
+            existing.get("id") == match_data.get("id")
+            for series in data_store["series"]
+            for existing in series.get("matches", [])
+        ):
+            print("❌ 该 FACEIT Match ID 已存在，未保存重复记录。")
+            return
+        selected_series.setdefault("matches", []).insert(0, match_data)
+        if selected_series.get("status") == "upcoming":
+            selected_series["status"] = "active"
 
         with open(JSON_FILE, "w", encoding="utf-8") as file:
             json.dump(data_store, file, ensure_ascii=False, indent=2)
-
+            
         print(
-            f"\n🎉 成功！已将 {match_data['teamA']} VS "
-            f"{match_data['teamB']} 的战绩写入 {JSON_FILE}。"
+            f"\n🎉 已将 {match_data['teamA']} VS {match_data['teamB']} "
+            f"添加到 {selected_series.get('title', '系列赛')}，写入 {JSON_FILE}。"
         )
         print("现在你可以执行 `git add .` -> `git commit` -> `git push` 发布最新战绩了！")
     else:

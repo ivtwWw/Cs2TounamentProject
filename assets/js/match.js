@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById('match-detail');
-    const matchId = new URLSearchParams(window.location.search).get('id');
+    const params = new URLSearchParams(window.location.search);
+    const matchId = params.get('id');
+    const requestedSeriesId = params.get('series');
 
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
         '&': '&amp;',
@@ -173,7 +175,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return response.json();
         })
         .then((data) => {
-            const match = data.matches.find((item) => item.id === matchId);
+            const series = (data.series || []).find((item) =>
+                (!requestedSeriesId || item.id === requestedSeriesId)
+                && (item.matches || []).some((match) => match.id === matchId)
+            );
+            const match = series
+                ? series.matches.find((item) => item.id === matchId)
+                : (data.matches || []).find((item) => item.id === matchId);
             if (!match) {
                 container.innerHTML = '<p class="error-message">找不到这场比赛。</p>';
                 return;
@@ -211,6 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? `<a class="btn" href="${escapeHtml(match.faceitUrl)}" target="_blank" rel="noopener">在 FACEIT 查看</a>`
                 : '';
             const isSeries = match.format === 'BO3' || maps.length > 1;
+            const backUrl = series
+                ? `series.html?id=${encodeURIComponent(series.id)}`
+                : 'index.html#history';
 
             if (!isSeries) {
                 const singleMap = maps[0] || {
@@ -220,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     teams: match.details?.teams || []
                 };
                 container.innerHTML = `
-                    <a class="back-link" href="index.html#history">← 返回历史战绩</a>
+                    <a class="back-link" href="${backUrl}">← 返回赛事</a>
                     <div class="match-heading">
                         <p class="match-stage">${escapeHtml(match.stage)}</p>
                         <p>${escapeHtml(match.info || match.map || '')}</p>
@@ -232,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             container.innerHTML = `
-                <a class="back-link" href="index.html#history">← 返回历史战绩</a>
+                <a class="back-link" href="${backUrl}">← 返回赛事</a>
                 <div class="match-heading">
                     <p class="match-stage">${escapeHtml(match.stage)}</p>
                     <p>${escapeHtml(match.info || match.map || '')}</p>

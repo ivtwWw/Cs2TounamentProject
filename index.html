@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS2 社区娱乐赛</title>
+    <title>CS2 Aussie Laozi Cup</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <!-- 顶部导航 -->
     <header>
         <div class="container">
             <a class="site-title" href="index.html" aria-label="返回主页">
@@ -21,26 +20,21 @@
         </div>
     </header>
 
-    <!-- 下一场比赛预告 -->
-    <section id="upcoming" class="container">
-        <h2>🔥 下一战：Aussie Laozi Cup S2</h2>
-        <div class="card highlight">
-            <p class="time">比赛时间：#Undefined</p>
-            <div class="matchup">
-                <span class="team">Team Alpha</span>
-                <span class="vs">VS</span>
-                <span class="team">Team Bravo</span>
+    <main class="container">
+        <section id="upcoming">
+            <h2>🔥 最新赛事</h2>
+            <div id="upcoming-series" class="series-grid">
+                <p class="loading">正在加载赛事届次...</p>
             </div>
-            <a href="#" class="btn">前往 FACEIT 主页</a>
-        </div>
-    </section>
+        </section>
 
-    <!-- 历史战绩展示 -->
-    <section id="history" class="container">
-    <h2>🏆 Aussie Laozi Cup S1</h2>
-    <!-- 数据将通过 JavaScript 动态插入到这里 -->
-    <div id="match-list"></div>
-    </section>
+        <section id="history">
+            <h2>🏆 历届赛事</h2>
+            <div id="series-list" class="series-grid">
+                <p class="loading">正在加载赛事届次...</p>
+            </div>
+        </section>
+    </main>
 
     <script src="assets/js/script.js"></script>
 </body>
