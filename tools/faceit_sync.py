@@ -87,7 +87,10 @@ def fetch_faceit_match(match_id):
 
     print(f"\n⏳ 正在向 FACEIT 请求比赛数据 (Match ID: {match_id})...")
 
-    response = requests.get(base_url, headers=headers)
+    try:
+        response = requests.get(base_url, headers=headers, timeout=20)
+    except requests.exceptions.RequestException as error:
+        raise RuntimeError(f"FACEIT 比赛信息请求失败：{error}") from error
     if response.status_code != 200:
         print(f"❌ 获取基础信息失败！HTTP 状态码: {response.status_code}")
         return None
@@ -105,7 +108,10 @@ def fetch_faceit_match(match_id):
         if voting and "map" in voting and "pick" in voting["map"]:
             map_name = voting["map"]["pick"][0]
 
-        stats_resp = requests.get(stats_url, headers=headers)
+        try:
+            stats_resp = requests.get(stats_url, headers=headers, timeout=20)
+        except requests.exceptions.RequestException as error:
+            raise RuntimeError(f"FACEIT 比赛统计请求失败：{error}") from error
         score = "未出结果"
         winner = "待定"
         details = {"teams": [], "maps": []}
@@ -212,10 +218,14 @@ def main():
         )
         return
 
-    match_type = input("\n请选择录入类型：1=单张地图，3=BO3 系列赛 [1/3]\n> ").strip()
+    match_type = input(
+        "\n请选择录入方式：1=单个 FACEIT 链接（自动识别 BO1/BO3），"
+        "3=多个地图链接手动合并为 BO3 [1/3]\n> "
+    ).strip()
     if match_type == "3":
         raw_ids = input(
-            "请按比赛顺序粘贴 FACEIT 地图链接或 Match ID，多个用逗号分隔（BO3 可为 2 或 3 张图）：\n> "
+            "请按比赛顺序粘贴 FACEIT 地图链接或 Match ID，"
+            "多个用逗号分隔（BO3 可为 2 或 3 张图）：\n> "
         )
         match_ids = [extract_match_id(value.strip()) for value in raw_ids.split(",") if value.strip()]
         if not 2 <= len(match_ids) <= 3:

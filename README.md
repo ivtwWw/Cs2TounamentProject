@@ -32,7 +32,8 @@ cs2MatchSite/
 ├── 📁 data/
 │   └── 📄 matches.json           # Match results and player statistics
 ├── 📁 tools/
-│   └── 📄 faceit_sync.py         # FACEIT match data sync tool
+│   ├── 📄 faceit_sync.py         # FACEIT match data sync helpers
+│   └── 📄 manage_matches.py      # Local match management menu
 ├── 📁 docs/
 │   └── 📄 changelog.md           # Change history
 └── 📄 README.md                  # Project documentation
@@ -83,8 +84,18 @@ python tools/faceit_sync.py
 
 ### 同步 BO3
 
-运行 `python tools/faceit_sync.py` 后选择 `3=BO3`，然后依次输入 2 或 3 张地图对应的 FACEIT Match 链接或 ID，用逗号分隔。脚本会把各图比分和选手数据合并为同一场系列赛；详情页提供“总览”和逐地图切换。
+运行 `python -m tools.manage_matches` 添加比赛时，若有一个代表整场系列赛的 FACEIT 链接，选择“单个 FACEIT 链接”，粘贴该链接即可。若该链接的 FACEIT stats API 返回全部地图数据，脚本会自动识别系列赛比分，并保存每张图的比分和选手统计。
 
-如果 FACEIT 的系列赛 Match ID 返回了多张地图统计，也可以选择单场同步，脚本会按返回的地图数据生成逐图视图。旧记录若没有地图/选手数据，需要用对应 FACEIT Match ID 重新同步。
+若 FACEIT 链接只对应一张地图，则使用 BO3 的“多个地图链接手动合并”方式，按比赛顺序输入 2 或 3 个地图对应的 Match 链接/ID。详情页提供系列赛总览和逐地图切换。旧记录若没有地图/选手数据，需要重新同步。
 
 从项目根目录运行同步脚本即可；脚本会始终读写 `data/matches.json`，不受当前工作目录影响。
+
+### 本地比赛管理
+
+在项目根目录运行：
+
+```powershell
+python -m tools.manage_matches
+```
+
+管理菜单可列出本地比赛、拉取并添加 BO1/BO3 比赛，或按列表编号删除记录。拉取新比赛需要先设置 `FACEIT_API_KEY`；查看和删除不需要 API Key。变更会直接写入 `data/matches.json`，取消确认不会保存。完成后检查网站，再手动提交并 push 到 GitHub Pages。

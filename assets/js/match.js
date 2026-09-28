@@ -210,6 +210,26 @@ document.addEventListener("DOMContentLoaded", () => {
             const faceitLink = match.faceitUrl
                 ? `<a class="btn" href="${escapeHtml(match.faceitUrl)}" target="_blank" rel="noopener">在 FACEIT 查看</a>`
                 : '';
+            const isSeries = match.format === 'BO3' || maps.length > 1;
+
+            if (!isSeries) {
+                const singleMap = maps[0] || {
+                    name: (match.info || match.map || '').replace(/^地图:\s*/, ''),
+                    score: match.score,
+                    winner: match.winner,
+                    teams: match.details?.teams || []
+                };
+                container.innerHTML = `
+                    <a class="back-link" href="index.html#history">← 返回历史战绩</a>
+                    <div class="match-heading">
+                        <p class="match-stage">${escapeHtml(match.stage)}</p>
+                        <p>${escapeHtml(match.info || match.map || '')}</p>
+                        ${faceitLink}
+                    </div>
+                    ${renderMap(match, singleMap, 0)}
+                `;
+                return;
+            }
 
             container.innerHTML = `
                 <a class="back-link" href="index.html#history">← 返回历史战绩</a>
