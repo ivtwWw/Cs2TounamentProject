@@ -211,6 +211,39 @@ h2 {
     color: #ff5500;
 }
 
+.faq-page {
+    margin-top: 40px;
+}
+
+.faq-page h2 {
+    margin-bottom: 12px;
+}
+
+.faq-intro {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.faq-item {
+    border-top: 1px solid #333;
+    padding: 16px 0;
+}
+
+.faq-item summary {
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.faq-item summary::marker {
+    color: #ff5500;
+}
+
+.faq-item p {
+    color: #c5c5c5;
+    margin-top: 12px;
+}
+
 .series-grid {
     display: grid;
     gap: 16px;
