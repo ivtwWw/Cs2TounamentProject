@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    }[character]));
+
     fetch('matches.json')
         .then(response => response.json())
         .then(data => {
@@ -13,18 +21,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 const matchDetail = match.info || match.map || match.details || '';
 
+                const matchId = encodeURIComponent(match.id || '');
+                const detailsUrl = matchId ? `match.html?id=${matchId}` : '';
                 htmlContent += `
-                    <div class="card match-result">
+                    <a class="card match-result match-link" href="${detailsUrl}">
                         <div class="match-info">
-                            <h3>${match.stage}</h3>
-                            <p>${matchDetail}</p>
+                            <h3>${escapeHtml(match.stage)}</h3>
+                            <p>${escapeHtml(matchDetail)}</p>
                         </div>
                         <div class="score-board">
-                            <span class="${teamAClass}">${match.teamA}</span>
-                            <span class="score">${match.score}</span>
-                            <span class="${teamBClass}">${match.teamB}</span>
+                            <span class="${teamAClass}">${escapeHtml(match.teamA)}</span>
+                            <span class="score">${escapeHtml(match.score)}</span>
+                            <span class="${teamBClass}">${escapeHtml(match.teamB)}</span>
                         </div>
-                    </div>
+                        <span class="details-hint">${matchId ? '查看详情 →' : '暂无详情'}</span>
+                    </a>
                 `;
             });
 
