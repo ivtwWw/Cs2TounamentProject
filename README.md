@@ -23,6 +23,7 @@ cs2MatchSite/
 │   └── 📄 tasks.json             # VS Code workspace tasks
 ├── 📄 index.html                 # Main page (kept at root for GitHub Pages)
 ├── 📄 match.html                 # Match detail page
+├── 📄 about.html                 # About the community tournament
 ├── 📁 assets/
 │   ├── 📁 css/
 │   │   └── 📄 style.css          # Site styles
