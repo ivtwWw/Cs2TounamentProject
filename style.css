@@ -104,9 +104,10 @@ h2 {
 
 /* 历史战绩列表样式 */
 .match-result {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) minmax(330px, 1.8fr) auto;
     align-items: center;
+    gap: 18px;
 }
 
 .match-link {
@@ -206,8 +207,28 @@ th {
 }
 
 .score-board {
-    font-size: 18px;
+    display: grid;
+    grid-template-columns: minmax(110px, 1fr) auto minmax(110px, 1fr);
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
     font-weight: bold;
+    min-width: 0;
+}
+
+.score-team {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.score-team-a {
+    text-align: right;
+}
+
+.score-team-b {
+    text-align: left;
 }
 
 .winner {
@@ -215,8 +236,153 @@ th {
 }
 
 .score {
-    margin: 0 15px;
+    margin: 0;
     background-color: #333;
     padding: 5px 10px;
     border-radius: 4px;
+    min-width: 84px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.match-heading {
+    margin: 24px 0;
+    text-align: center;
+}
+
+.match-heading > p:last-of-type {
+    color: #888;
+    margin-bottom: 16px;
+}
+
+.series-score {
+    align-items: center;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, auto) minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 28px;
+    text-align: center;
+}
+
+.series-team {
+    font-size: clamp(15px, 2vw, 22px);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.series-score-center {
+    display: grid;
+    gap: 2px;
+}
+
+.series-format, .series-status {
+    color: #999;
+    font-size: 13px;
+}
+
+.series-score-center strong {
+    font-size: 34px;
+    line-height: 1.2;
+}
+
+.series-score-center i, .map-score-line i {
+    color: #777;
+    font-size: 0.7em;
+    font-style: normal;
+    margin: 0 5px;
+}
+
+.map-selector {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    margin: 18px 0 24px;
+}
+
+.map-card {
+    background: #1e1e1e;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: #e0e0e0;
+    cursor: pointer;
+    display: grid;
+    gap: 4px;
+    min-height: 72px;
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.map-card:hover, .map-card.is-active {
+    border-color: #777;
+    box-shadow: inset 3px 0 #ff5500;
+}
+
+.map-card.is-active .map-card-score {
+    color: #ff5500;
+}
+
+.map-card-score {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.map-card-name {
+    color: #999;
+    font-size: 13px;
+}
+
+.selected-map-data {
+    min-height: 80px;
+}
+
+.map-summary {
+    text-align: center;
+}
+
+.map-summary > p {
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.map-score-line {
+    align-items: center;
+    display: grid;
+    font-size: clamp(14px, 2vw, 20px);
+    font-weight: 700;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) minmax(100px, auto) minmax(0, 1fr);
+}
+
+.map-score-line > :first-child {
+    text-align: right;
+}
+
+.map-score-line > :last-child {
+    text-align: left;
+}
+
+.map-score-line strong {
+    background: #292929;
+    border-radius: 6px;
+    min-width: 100px;
+    padding: 6px 10px;
+    white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+    .match-result {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .score-board {
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        width: 100%;
+    }
+
+    .series-score {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
 }

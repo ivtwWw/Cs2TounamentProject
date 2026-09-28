@@ -30,9 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             <p>${escapeHtml(matchDetail)}</p>
                         </div>
                         <div class="score-board">
-                            <span class="${teamAClass}">${escapeHtml(match.teamA)}</span>
+                            <span class="score-team score-team-a ${teamAClass}">${escapeHtml(match.teamA)}</span>
                             <span class="score">${escapeHtml(match.score)}</span>
-                            <span class="${teamBClass}">${escapeHtml(match.teamB)}</span>
+                            <span class="score-team score-team-b ${teamBClass}">${escapeHtml(match.teamB)}</span>
                         </div>
                         <span class="details-hint">${matchId ? '查看详情 →' : '暂无详情'}</span>
                     </a>
