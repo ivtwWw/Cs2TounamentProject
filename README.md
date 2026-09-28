@@ -6,11 +6,14 @@ A clean, lightweight, and modern web application designed to track and display C
 
 ## 🚀 Current Features
 
-- **Dynamic Data Rendering:** Match results and stats are stored in `data/matches.json` and loaded dynamically.
-- **Organized Project Structure:** Frontend assets, match data, sync tools, and documentation are grouped by purpose. HTML entry pages stay at the repository root for GitHub Pages.
-- **Zero-Dependency Frontend:** Built using pure HTML5, modern CSS, and Vanilla JavaScript for lightning-fast load times and easy maintenance.
-- **Match Detail Pages:** Each match has a detail link. Matches synchronized from FACEIT include team rosters and player statistics.
-- **Live Deployment:** Automatically deployed and publicly accessible via GitHub Pages.
+- **Series-based home page:** Upcoming and completed tournament editions (S1, S2, etc.) are shown separately.
+- **Edition and match details:** Each edition has its own match list; individual BO1/BO3 pages show scores, maps, rosters, and available player statistics.
+- **Player statistics:** Kills, deaths, assists, K/D, headshot percentage, ADR, and MVP count are displayed when present in the saved match data. BO3 overview totals are aggregated from map data.
+- **Edition information:** Event time, schedule, champion, captain, MVP, champion roster, FACEIT profile links, and avatars can be recorded for each edition.
+- **Local data management:** A command-line menu can add or remove matches, create editions, update edition information, and edit champion/MVP records.
+- **Hall of Fame placeholder:** The home page links to a separate Hall of Fame page, ready for future content.
+- **Responsive, dependency-free front end:** Built with HTML, CSS, and vanilla JavaScript; data is loaded from JSON.
+- **GitHub Pages deployment:** The site is published from the repository using GitHub Actions.
 
 ---
 
@@ -21,19 +24,19 @@ cs2MatchSite/
 ├── 📄 .gitignore                 # Local files and generated Python cache exclusions
 ├── 📁 .vscode/
 │   └── 📄 tasks.json             # VS Code workspace tasks
-├── 📄 index.html                 # Main page (kept at root for GitHub Pages)
-├── 📄 series.html                # One edition's match list
-├── 📄 match.html                 # Match detail page
-├── 📄 about.html                 # About the community tournament
-├── 📄 hall-of-fame.html          # Hall of fame placeholder page
+├── 📄 index.html                 # Home page (kept at root for GitHub Pages)
+├── 📄 series.html                # Edition match list and tournament awards
+├── 📄 match.html                 # Match and player-statistics details
+├── 📄 about.html                 # About page
+├── 📄 hall-of-fame.html          # Hall of Fame placeholder page
 ├── 📄 _config.yml                # Keep Markdown files available as raw content
 ├── 📁 assets/
 │   ├── 📁 css/
 │   │   └── 📄 style.css          # Site styles
 │   └── 📁 js/
-│       ├── 📄 script.js          # Match list rendering
-│       ├── 📄 series.js           # Edition match list rendering
-│       ├── 📄 match.js           # Match detail rendering
+│       ├── 📄 script.js          # Home page series cards
+│       ├── 📄 series.js          # Edition page and awards rendering
+│       ├── 📄 match.js           # Match details and statistics
 │       └── 📄 about.js           # Markdown content rendering
 ├── 📁 data/
 │   └── 📄 matches.json           # Editions, match results, and player statistics
@@ -46,10 +49,13 @@ cs2MatchSite/
 └── 📄 README.md                  # Project documentation
 ```
 
-首页以赛事届次为单位展示 S1、S2 等系列赛；点进届次后查看该届比赛，单场详情仍可查看地图和选手数据。赛事数据按 `data/matches.json` 的 `series[]` 分组，每个系列赛包含 `id`、`title`、`status`、`description` 和 `matches[]`，并可选填 `eventTime`（比赛时间）及 `schedule`（赛程信息）；这两项显示在主页系列赛卡片和对应届次详情中。
-已结束的届次还可记录 `championTeam`、`captain`、`mvp` 和 `championPlayers`。冠军队员的 FACEIT ID 和头像信息会展示在系列赛详情中；赛事 MVP 的 K/D、ADR、爆头率、击杀、死亡、助攻和单场 MVP 数根据本届地图统计汇总。Rating 需要手动填写，不会由网站推算。
+The home page displays upcoming editions, completed editions, and a Hall of Fame link. The top-left ALTV wordmark expands to “Aussie Laozi TV” on hover or keyboard focus. The Hall of Fame currently opens a standalone placeholder page.
 
-“关于我们”页面的文案位于 `docs/about.md`。直接编辑该 Markdown 文件即可更新页面正文，支持标题、段落、无序列表、粗体、斜体和链接；无需修改 HTML 或 JavaScript。
+Tournament data is stored in the `series[]` array in `data/matches.json`. Each edition contains `id`, `title`, `status`, `description`, and `matches[]`. The optional `eventTime` and `schedule` fields are shown on the home page and edition details. When either field is set, the description line displays the edition title. Completed editions can also record `championTeam`, `captain`, `mvp`, and `championPlayers`.
+
+Champion roster FACEIT IDs link to FACEIT player profiles. Avatars can be obtained from FACEIT match data or added through the management menu. The MVP’s K/D, kills, deaths, assists, ADR, headshot percentage, and match MVP count are aggregated from saved map statistics for the edition. Tournament Rating must currently be entered manually. The sync tool saves `player_stats` returned by the FACEIT Stats API, but the Rating and Swing values shown on the FACEIT website have not yet been verified or integrated; do not assume they synchronize automatically.
+
+The About page content is stored in `docs/about.md`. Edit this Markdown file to update the page without changing its HTML or JavaScript. Supported formatting includes headings, paragraphs, unordered lists, bold, italic, and links.
 
 ---
 
@@ -57,10 +63,12 @@ cs2MatchSite/
 
 - [x] **FACEIT API Integration:** Fetch match and player stats from the FACEIT API using `tools/faceit_sync.py`.
 - [x] **BO3 Match Support:** Combine map results into a series overview with selectable per-map details.
-- [x] **Series Management:** Organize seasons such as S1 and S2, with each season containing its own matches.
-- [ ] **Automated Data Pipeline:** Set up automated sync so match results automatically update `data/matches.json`.
-- [ ] **UI/UX Enhancement:** Add responsive grid layouts, filtering options (by map, player, or outcome), and team badges.
-- [ ] **Leaderboard & Statistics:** Implement aggregate player statistics (K/D ratios, win rates, headshot percentages).
+- [x] **Series Management:** Organize editions such as S1 and S2, each with its own matches, schedule, and awards.
+- [x] **Local Match Administration:** Add, remove, and manage matches and edition metadata from the CLI.
+- [x] **Player Statistics:** Display available match and BO3 aggregate statistics.
+- [ ] **Automated Data Pipeline:** Automatically synchronize match results into `data/matches.json`.
+- [ ] **FACEIT Rating/Swing:** Verify whether these website statistics are available from a supported API response, then integrate if accessible.
+- [ ] **Hall of Fame:** Replace the placeholder with historical player records.
 
 ---
 
@@ -73,48 +81,46 @@ cs2MatchSite/
 2. Open the project folder in **VS Code**.
 3. Use **Live Server** to preview the site locally.
 
-## FACEIT 数据同步配置
+## FACEIT Data Sync Setup
 
-`tools/faceit_sync.py` 不会在源代码中保存 API Key。运行脚本前，请在当前终端会话中设置
-`FACEIT_API_KEY` 环境变量：
+`tools/faceit_sync.py` does not store an API key in source code. Set the `FACEIT_API_KEY` environment variable in the current terminal session before running the script:
 
 ### Windows PowerShell
 
 ```powershell
-$env:FACEIT_API_KEY = "你的新 FACEIT API Key"
+$env:FACEIT_API_KEY = "YOUR_NEW_FACEIT_API_KEY"
 python tools/faceit_sync.py
 ```
 
-### Windows 命令提示符
+### Windows Command Prompt
 
 ```cmd
-set FACEIT_API_KEY=你的新 FACEIT API Key
+set FACEIT_API_KEY=YOUR_NEW_FACEIT_API_KEY
 python tools/faceit_sync.py
 ```
 
-如果旧 API Key 曾经提交到 Git 或公开仓库，请立即在 FACEIT 开发者后台撤销它并生成新 Key。
-不要把新 Key 写入代码、`data/matches.json`、README 或提交到仓库。
+If an old API key was committed to Git or exposed in a public repository, revoke it in the FACEIT Developer Portal and generate a new one immediately. Do not put the new key in source code, `data/matches.json`, this README, or any commit.
 
-### 同步 BO3
+### Syncing BO3 Matches
 
-运行 `python -m tools.manage_matches` 添加比赛时，若有一个代表整场系列赛的 FACEIT 链接，选择“单个 FACEIT 链接”，粘贴该链接即可。若该链接的 FACEIT stats API 返回全部地图数据，脚本会自动识别系列赛比分，并保存每张图的比分和选手统计。
+When adding a match with `python -m tools.manage_matches`, choose the single FACEIT link option if you have a link for the entire series. If the FACEIT Stats API returns data for all maps, the script will identify the series score and save each map’s score and player statistics.
 
-若 FACEIT 链接只对应一张地图，则使用 BO3 的“多个地图链接手动合并”方式，按比赛顺序输入 2 或 3 个地图对应的 Match 链接/ID。详情页提供系列赛总览和逐地图切换。旧记录若没有地图/选手数据，需要重新同步。
+If the FACEIT link only represents one map, choose the BO3 option to manually combine multiple map links and enter the 2 or 3 FACEIT match links/IDs in match order. The match details page provides a series overview and per-map navigation. Existing records without map or player data must be synchronized again to include it.
 
-从项目根目录运行同步脚本即可；脚本会始终读写 `data/matches.json`，不受当前工作目录影响。
+Run the sync script from the project root. It always reads and writes `data/matches.json`, regardless of the current working directory.
 
-### 本地比赛管理
+### Local Match Management
 
-在项目根目录运行：
+From the project root, run:
 
 ```powershell
 python -m tools.manage_matches
 ```
 
-管理菜单可列出系列赛和比赛、拉取并添加 BO1/BO3 比赛、按列表编号删除记录、创建新系列赛、更新系列赛状态/比赛时间/赛程信息，以及编辑冠军队、队长、MVP、赛事 Rating 和冠军队员头像。更新系列赛信息时，时间可填写为自由格式（如 `2026年9月1日—9月15日`）；多条赛程阶段可用分号分隔，留空保持原值，输入 `-` 清除。拉取新比赛需要先设置 `FACEIT_API_KEY`；查看和删除不需要 API Key。变更会直接写入 `data/matches.json`，取消确认不会保存。完成后检查网站，再手动提交并 push 到 GitHub Pages。
+The management menu can list editions and matches, fetch and add BO1/BO3 matches, delete matches by list number, create editions, update edition status/event time/schedule, and edit the champion team, captain, MVP, tournament Rating, and champion roster avatars. Event time accepts free-form text (for example, `Sep 1–15, 2026`). Separate schedule stages can be entered using semicolons. Leave a field blank to keep its current value, or enter `-` to clear it. Set `FACEIT_API_KEY` before fetching matches; viewing, deleting, and editing edition information do not require an API key. Changes are written directly to `data/matches.json`. Review the site, then commit and push your changes to deploy them through GitHub Pages.
 
-要录入或修改主页显示的赛事时间和赛程：运行管理菜单，选择 `5. 更新系列赛信息（状态、比赛时间、赛程）`，再选对应届次。时间支持自由文本；赛程节点用分号分隔后会逐行显示在主页历届赛事卡片和届次详情页。字段留空会保留原内容，输入 `-` 可清除时间或赛程。
+To add or edit the event time and schedule shown on the home page, run the management menu and choose `5. Update edition information (status, event time, schedule)`, then select the edition. Event time accepts free-form text. Separate schedule stages with semicolons; they will appear on separate lines on the home-page edition card and edition details page. Leave a field blank to keep its current value, or enter `-` to clear it.
 
-赛事结束后运行 `python -m tools.manage_matches`，选择菜单 `6` 登记冠军、队长和 MVP。MVP 的赛事总 Rating 需要手动输入；其他统计根据本届已同步的地图数据自动汇总。冠军队成员和 FACEIT ID 从总决赛数据读取，管理菜单会逐一提供头像 URL 补录项。主页历届赛事卡片展示冠军、队长和 MVP；点入届次后可查看冠军队阵容及 MVP 完整统计。
+After an edition is complete, run `python -m tools.manage_matches` and choose menu option `6` to record the champion, captain, and MVP. Enter the MVP’s tournament Rating manually; other statistics are aggregated from the edition’s synchronized map data. Champion roster members and FACEIT IDs are read from the final match data. The menu prompts for each roster member’s avatar URL. The home-page edition card shows the champion, captain, and MVP; the edition page shows the champion roster and the MVP’s full tournament statistics.
 
-要创建 S2 或后续届次，在管理菜单选择“创建系列赛”，填写 ID（如 `s2`）、标题、简介和状态。添加比赛时选择它所属的系列赛；S1、S2 的比赛不会再混在同一个列表里。
+To create S2 or a later edition, choose `Create edition` from the management menu and enter its ID (for example, `s2`), title, description, and status. When adding a match, select the edition it belongs to. Matches from S1, S2, and later editions are kept in separate lists.
